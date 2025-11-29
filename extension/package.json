@@ -1,0 +1,25 @@
+{
+  "name": "chrome-extension-vue-ts-tailwind",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.4.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.258",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "autoprefixer": "^10.4.22",
+    "pinia": "^3.0.4",
+    "postcss": "^8.4.31",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21",
+    "vue-tsc": "^3.1.5"
+  }
+}

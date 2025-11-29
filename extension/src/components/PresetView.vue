@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useApiStore } from '../stores/apiStore';
 
 const apiStore = useApiStore();
 
 const preset = computed(() => apiStore.selectedPresetDetails);
+const statusMessage = ref<string | null>(null);
+const isSending = ref<boolean>(false);
 
 // Optional: Load details if selectedPresetId is set but details are not loaded (e.g., direct navigation)
 onMounted(() => {
@@ -17,12 +19,56 @@ onMounted(() => {
 watch(() => apiStore.selectedPresetId, (newId) => {
   if (newId) {
     apiStore.loadPresetDetails(parseInt(newId));
+    statusMessage.value = null; // Clear status when a new preset is selected
   }
 });
 
 function goBack() {
   apiStore.selectedPresetId = null; // Clear selected preset to go back to MainView
   apiStore.selectedPresetDetails = null; // Clear details
+  statusMessage.value = null; // Clear status
+}
+
+async function sendPresetToCli() {
+  if (!preset.value || !preset.value.content) {
+    statusMessage.value = "Error: Preset content is missing.";
+    return;
+  }
+
+  isSending.value = true;
+  statusMessage.value = "Sending command...";
+  const result = await apiStore.sendCommandToBetaflight(preset.value.content);
+  isSending.value = false;
+
+  if (result.success) {
+    statusMessage.value = "Command sent successfully!";
+  } else {
+    let errorMessage = "Failed to send command.";
+    switch (result.reason) {
+      case 'no_active_tab':
+        errorMessage = 'Error: No active tab found.';
+        break;
+      case 'cli_tab_not_found':
+        errorMessage = 'Error: "CLI" tab not found in Betaflight configurator.';
+        break;
+      case 'textarea_not_found_after_click':
+        errorMessage = 'Error: CLI input field not found after switching to CLI tab.';
+        break;
+      case 'output_element_not_found':
+        errorMessage = 'Error: Betaflight output element not found.';
+        break;
+      case 'terminal_not_ready':
+        errorMessage = 'Error: Betaflight terminal not ready after multiple attempts.';
+        break;
+      case 'unknown_error':
+        errorMessage = 'An unknown error occurred while sending the command.';
+        break;
+      default:
+        errorMessage = `Failed to send command: ${result.reason || 'unknown reason'}.`;
+        break;
+    }
+    statusMessage.value = errorMessage;
+  }
 }
 </script>
 
@@ -39,8 +85,22 @@ function goBack() {
             {{ tag }}
           </span>
         </p>
-        <!-- Add more details as needed -->
+        <p class="font-mono bg-gray-100 p-2 rounded text-sm mt-2">
+          {{ preset.content }}
+        </p>
       </div>
+      
+      <div class="mt-4">
+        <button @click="sendPresetToCli" :disabled="isSending"
+                class="w-full px-4 py-2 rounded-md font-semibold transition-colors duration-200 bg-blue-600 text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span v-if="isSending">Sending...</span>
+          <span v-else>Send to Betaflight CLI</span>
+        </button>
+        <p v-if="statusMessage" :class="{'text-green-600': statusMessage.includes('successfully'), 'text-red-600': statusMessage.includes('Error') || statusMessage.includes('Failed')}" class="mt-2 text-sm text-center">
+          {{ statusMessage }}
+        </p>
+      </div>
+
     </div>
     <div v-else class="text-gray-600">
       <p>Loading preset details or no preset selected...</p>

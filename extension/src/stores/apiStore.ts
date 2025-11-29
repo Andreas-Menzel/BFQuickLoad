@@ -68,6 +68,59 @@ export const useApiStore = defineStore('api', () => {
     await loadPresetDetails(presetId);
   }
 
+  // New action to send commands to the Betaflight content script
+  async function sendCommandToBetaflight(command: string): Promise<{ success: boolean; reason?: string }> {
+    return new Promise((resolve) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) {
+          resolve({ success: false, reason: 'no_active_tab' });
+          return;
+        }
+        const tabId = tabs[0]?.id; // Use optional chaining
+        if (typeof tabId !== 'number') {
+          resolve({ success: false, reason: 'no_active_tab' });
+          return;
+        }
+
+        // Programmatically inject the content script before sending the message
+        chrome.scripting.executeScript(
+          {
+            target: { tabId: tabId },
+            files: ['betaflight_content.js'],
+          },
+          () => {
+            if (chrome.runtime.lastError) {
+              console.error("Error injecting content script:", chrome.runtime.lastError.message);
+              resolve({ success: false, reason: `script_injection_failed: ${chrome.runtime.lastError.message}` });
+              return;
+            }
+
+            // Once injected, send the message
+            chrome.tabs.sendMessage(
+              tabId,
+              {
+                type: 'SET_TEXT_IN_BETAFLIGHT_FIELD',
+                payload: { text: command }
+              },
+              (response) => {
+                if (chrome.runtime.lastError) {
+                  console.error("Error sending message:", chrome.runtime.lastError.message);
+                  resolve({ success: false, reason: chrome.runtime.lastError.message });
+                  return;
+                }
+                if (response && response.success) {
+                  resolve({ success: true });
+                } else {
+                  resolve({ success: false, reason: response?.reason || 'unknown_error' });
+                }
+              }
+            );
+          }
+        );
+      });
+    });
+  }
+
   // Expose DefaultService through the store
   const apiService = DefaultService;
 
@@ -83,6 +136,7 @@ export const useApiStore = defineStore('api', () => {
     loadCatalog,
     loadPresetDetails,
     selectPreset,
+    sendCommandToBetaflight, // Expose the new action
     apiService,
   };
 });

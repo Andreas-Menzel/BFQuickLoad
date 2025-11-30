@@ -8,7 +8,7 @@
     "/ping": {
       "get": {
         "summary": "Ping",
-        "operationId": "ping",
+        "operationId": "get_ping",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -40,18 +40,14 @@
     "/presets/catalog": {
       "get": {
         "summary": "Read Catalog",
-        "operationId": "get_catalog",
+        "operationId": "get_presets_catalog",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/PresetMetadata"
-                  },
-                  "type": "array",
-                  "title": "Response Get Catalog"
+                  "$ref": "#/components/schemas/PresetsCatalog"
                 }
               }
             }
@@ -119,6 +115,67 @@
           }
         }
       }
+    },
+    "/search_filters": {
+      "get": {
+        "summary": "Read Search Filters",
+        "operationId": "get_all_search_filters",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchFilter"
+                  },
+                  "type": "array",
+                  "title": "Response Get All Search Filters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "search_filter/{filter_id}": {
+      "get": {
+        "summary": "Read Search Filter",
+        "operationId": "get_search_filter",
+        "parameters": [
+          {
+            "name": "filter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Filter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchFilter"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -151,11 +208,13 @@
           },
           "name": {
             "type": "string",
-            "title": "Name"
+            "title": "Name",
+            "default": ""
           },
           "description": {
             "type": "string",
-            "title": "Description"
+            "title": "Description",
+            "default": ""
           },
           "tags": {
             "items": {
@@ -166,21 +225,16 @@
           },
           "author": {
             "type": "string",
-            "title": "Author"
+            "title": "Author",
+            "default": "unknown"
           },
           "content": {
             "type": "string",
-            "title": "Content"
+            "title": "Content",
+            "default": ""
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "description",
-          "tags",
-          "author",
-          "content"
-        ],
         "title": "Preset"
       },
       "PresetMetadata": {
@@ -197,16 +251,16 @@
             "type": "string",
             "title": "Description"
           },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
           "tags": {
             "items": {
               "type": "string"
             },
             "type": "array",
             "title": "Tags"
-          },
-          "author": {
-            "type": "string",
-            "title": "Author"
           }
         },
         "type": "object",
@@ -214,10 +268,84 @@
           "id",
           "name",
           "description",
-          "tags",
-          "author"
+          "author",
+          "tags"
         ],
         "title": "PresetMetadata"
+      },
+      "PresetsCatalog": {
+        "properties": {
+          "presets_metadata": {
+            "items": {
+              "$ref": "#/components/schemas/PresetMetadata"
+            },
+            "type": "array",
+            "title": "Presets Metadata"
+          },
+          "authors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Authors"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "presets_metadata",
+          "authors",
+          "tags"
+        ],
+        "title": "PresetsCatalog"
+      },
+      "SearchFilter": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "search_query": {
+            "type": "string",
+            "title": "Search Query"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "search_query",
+          "author",
+          "tags"
+        ],
+        "title": "SearchFilter"
       },
       "ValidationError": {
         "properties": {

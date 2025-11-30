@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { DefaultService } from '../types'; // Added
-import { OpenAPI, Preset, PresetMetadata } from '../types'; // Modified
+import {DefaultService, PresetsCatalog} from '../types.gen'; // Added
+import { OpenAPI, Preset } from '../types.gen'; // Modified
 
 export const useApiStore = defineStore('api', () => {
   const apiUrl = ref<string>("");
   const chromeStorageApiUrl = ref<string>(""); // To keep track of the URL in Chrome Storage
-  const catalog = ref<PresetMetadata[]>([]); // New state for catalog
+  const catalog = ref<PresetsCatalog | null>(null); // New state for catalog
   const selectedPresetId = ref<string | null>(null); // New state for selected preset ID
   const selectedPresetDetails = ref<Preset | null>(null); // New state for selected preset details
 
@@ -39,10 +39,10 @@ export const useApiStore = defineStore('api', () => {
       return;
     }
     try {
-      catalog.value = await DefaultService.getCatalog();
+      catalog.value = await DefaultService.getPresetsCatalog();
     } catch (error) {
       console.error("Failed to load catalog:", error);
-      catalog.value = [];
+      catalog.value = null;
     }
   }
 

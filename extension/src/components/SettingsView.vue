@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import { useApiStore } from '../stores/apiStore';
-import {DefaultService} from "../types";
+import {DefaultService} from "../types.gen";
 
 const emit = defineEmits(['change-view']); // Declare emits
 
@@ -24,7 +24,7 @@ async function testConnection() {
   }
 
   try {
-    const data = await DefaultService.ping();
+    const data = await DefaultService.getPing();
 
     if (data && data.app_name === "BFQuickLoad") {
       connectionStatus.value = "connected";

@@ -14,6 +14,12 @@
   "host_permissions": [
     "https://app.betaflight.com/*"
   ],
+  "content_scripts": [
+    {
+      "matches": ["https://app.betaflight.com/*"],
+      "js": ["betaflight_content.js"]
+    }
+  ],,
   "icons": {
     "16": "logo16.png",
     "48": "logo48.png",

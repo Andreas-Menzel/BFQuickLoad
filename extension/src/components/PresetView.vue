@@ -85,7 +85,7 @@ async function sendPresetToCli() {
             {{ tag }}
           </span>
         </p>
-        <p class="font-mono bg-gray-100 p-2 rounded text-sm mt-2">
+        <p class="font-mono bg-gray-100 p-2 rounded text-sm mt-2 max-h-40 overflow-y-auto whitespace-pre-wrap">
           {{ preset.content }}
         </p>
       </div>

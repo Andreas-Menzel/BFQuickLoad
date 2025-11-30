@@ -86,24 +86,26 @@ function closeSettings() {
 
     <hr class="my-4">
 
-    <div class="flex justify-center items-center mt-4">
-      <img src="/logo128.png" alt="BFQuickLoad Logo" class="h-32 w-auto">
-    </div>
+    <div class="grid grid-cols-2 gap-4 mt-4 items-center">
+      <div class="flex justify-center">
+        <img src="/logo128.png" alt="BFQuickLoad Logo" class="h-32 w-auto">
+      </div>
 
-    <div class="text-center text-gray-500 text-sm mt-4">
-      <p>Developed by Andreas Menzel</p>
-      <p>
-        <a href="https://github.com/Andreas-Menzel/BFQuickLoad" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
-          GitHub Repository
-        </a>
-      </p>
-      <p class="mt-2">
-        Join the
-        <a href="https://www.instagram.com/FPVonSpot" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
-          FPVonSpot
-        </a>
-        crew!
-      </p>
+      <div class="text-gray-500 text-sm">
+        <p>Developed by Andreas Menzel</p>
+        <p>
+          <a href="https://github.com/Andreas-Menzel/BFQuickLoad" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
+            GitHub Repository
+          </a>
+        </p>
+        <p class="mt-2">
+          Join the
+          <a href="https://www.instagram.com/FPVonSpot" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
+            FPVonSpot
+          </a>
+          crew!
+        </p>
+      </div>
     </div>
   </div>
 </template>

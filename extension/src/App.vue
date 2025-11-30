@@ -1,5 +1,5 @@
 <template>
-  <div class="w-80 h-auto p-4 bg-gray-50 flex flex-col space-y-4">
+  <div class="w-[580px] p-4 bg-gray-50 flex flex-col space-y-4">
     <h1 class="text-2xl font-bold text-gray-800 text-center mb-4">BFQuickLoad</h1>
 
     <div class="mt-4">

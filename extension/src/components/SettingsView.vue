@@ -2,6 +2,7 @@
 import {onMounted, ref} from 'vue'
 import { useApiStore } from '../stores/apiStore';
 import {DefaultService} from "../types.gen";
+import {View} from "../types/view.ts";
 
 const emit = defineEmits(['change-view']); // Declare emits
 
@@ -42,7 +43,7 @@ onMounted(async () => {
 });
 
 function closeSettings() {
-  emit('change-view', 'main');
+  emit('change-view', View.MAIN);
 }
 </script>
 
